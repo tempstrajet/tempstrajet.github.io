@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <style>
+        #map {
+            width: 691px;
+            height: 540px;
+        }
+        </style>
+        <title>Temps de trajet entre centre SSR et MCO</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/DEPARTEMENT_1.js"></script>
+        <script src="data/Longuedistance_2.js"></script>
+        <script src="data/Longuedistancetempscourt_3.js"></script>
+        <script src="data/Faibledistancetempslong_4.js"></script>
+        <script src="data/Faibledistance_5.js"></script>
+        <script src="data/CentreSSR_6.js"></script>
+        <script src="data/CentreMCOaveclitsdesoinscritiques_7.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[48.63770829649811,2.101079961424814],[49.012853102939204,2.8262819596443496]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        var layer_OpenStreetMap_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            opacity: 0.6,
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OpenStreetMap_0;
+        map.addLayer(layer_OpenStreetMap_0);
+        function pop_DEPARTEMENT_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? Autolinker.link(feature.properties['OBJECTID'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['N_SQ_DE'] !== null ? Autolinker.link(feature.properties['N_SQ_DE'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['C_DEP'] !== null ? Autolinker.link(feature.properties['C_DEP'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['L_DEP'] !== null ? Autolinker.link(feature.properties['L_DEP'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SHAPE_Leng'] !== null ? Autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SHAPE_Area'] !== null ? Autolinker.link(feature.properties['SHAPE_Area'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_DEPARTEMENT_1_0() {
+            return {
+                pane: 'pane_DEPARTEMENT_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(225,89,137,0.0)',
+                interactive: false,
+            }
+        }
+        map.createPane('pane_DEPARTEMENT_1');
+        map.getPane('pane_DEPARTEMENT_1').style.zIndex = 401;
+        map.getPane('pane_DEPARTEMENT_1').style['mix-blend-mode'] = 'normal';
+        var layer_DEPARTEMENT_1 = new L.geoJson(json_DEPARTEMENT_1, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_DEPARTEMENT_1',
+            layerName: 'layer_DEPARTEMENT_1',
+            pane: 'pane_DEPARTEMENT_1',
+            onEachFeature: pop_DEPARTEMENT_1,
+            style: style_DEPARTEMENT_1_0,
+        });
+        bounds_group.addLayer(layer_DEPARTEMENT_1);
+        map.addLayer(layer_DEPARTEMENT_1);
+        function pop_Longuedistance_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ogc_fid'] !== null ? Autolinker.link(feature.properties['ogc_fid'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">distancekm</th>\
+                        <td>' + (feature.properties['distancekm'] !== null ? Autolinker.link(feature.properties['distancekm'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tempsmin</th>\
+                        <td>' + (feature.properties['tempsmin'] !== null ? Autolinker.link(feature.properties['tempsmin'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Longuedistance_2_0() {
+            return {
+                pane: 'pane_Longuedistance_2',
+                opacity: 1,
+                color: 'rgba(195,86,207,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Longuedistance_2');
+        map.getPane('pane_Longuedistance_2').style.zIndex = 402;
+        map.getPane('pane_Longuedistance_2').style['mix-blend-mode'] = 'normal';
+        var layer_Longuedistance_2 = new L.geoJson(json_Longuedistance_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Longuedistance_2',
+            layerName: 'layer_Longuedistance_2',
+            pane: 'pane_Longuedistance_2',
+            onEachFeature: pop_Longuedistance_2,
+            style: style_Longuedistance_2_0,
+        });
+        bounds_group.addLayer(layer_Longuedistance_2);
+        map.addLayer(layer_Longuedistance_2);
+        function pop_Longuedistancetempscourt_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ogc_fid'] !== null ? Autolinker.link(feature.properties['ogc_fid'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">distancekm</th>\
+                        <td>' + (feature.properties['distancekm'] !== null ? Autolinker.link(feature.properties['distancekm'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tempsmin</th>\
+                        <td>' + (feature.properties['tempsmin'] !== null ? Autolinker.link(feature.properties['tempsmin'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Longuedistancetempscourt_3_0() {
+            return {
+                pane: 'pane_Longuedistancetempscourt_3',
+                opacity: 1,
+                color: 'rgba(79,87,234,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Longuedistancetempscourt_3');
+        map.getPane('pane_Longuedistancetempscourt_3').style.zIndex = 403;
+        map.getPane('pane_Longuedistancetempscourt_3').style['mix-blend-mode'] = 'normal';
+        var layer_Longuedistancetempscourt_3 = new L.geoJson(json_Longuedistancetempscourt_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Longuedistancetempscourt_3',
+            layerName: 'layer_Longuedistancetempscourt_3',
+            pane: 'pane_Longuedistancetempscourt_3',
+            onEachFeature: pop_Longuedistancetempscourt_3,
+            style: style_Longuedistancetempscourt_3_0,
+        });
+        bounds_group.addLayer(layer_Longuedistancetempscourt_3);
+        map.addLayer(layer_Longuedistancetempscourt_3);
+        function pop_Faibledistancetempslong_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ogc_fid'] !== null ? Autolinker.link(feature.properties['ogc_fid'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">distancekm</th>\
+                        <td>' + (feature.properties['distancekm'] !== null ? Autolinker.link(feature.properties['distancekm'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tempsmin</th>\
+                        <td>' + (feature.properties['tempsmin'] !== null ? Autolinker.link(feature.properties['tempsmin'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Faibledistancetempslong_4_0() {
+            return {
+                pane: 'pane_Faibledistancetempslong_4',
+                opacity: 1,
+                color: 'rgba(195,86,207,1.0)',
+                dashArray: '1,5',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Faibledistancetempslong_4');
+        map.getPane('pane_Faibledistancetempslong_4').style.zIndex = 404;
+        map.getPane('pane_Faibledistancetempslong_4').style['mix-blend-mode'] = 'normal';
+        var layer_Faibledistancetempslong_4 = new L.geoJson(json_Faibledistancetempslong_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Faibledistancetempslong_4',
+            layerName: 'layer_Faibledistancetempslong_4',
+            pane: 'pane_Faibledistancetempslong_4',
+            onEachFeature: pop_Faibledistancetempslong_4,
+            style: style_Faibledistancetempslong_4_0,
+        });
+        bounds_group.addLayer(layer_Faibledistancetempslong_4);
+        map.addLayer(layer_Faibledistancetempslong_4);
+        function pop_Faibledistance_5(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ogc_fid'] !== null ? Autolinker.link(feature.properties['ogc_fid'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">distancekm</th>\
+                        <td>' + (feature.properties['distancekm'] !== null ? Autolinker.link(feature.properties['distancekm'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tempsmin</th>\
+                        <td>' + (feature.properties['tempsmin'] !== null ? Autolinker.link(feature.properties['tempsmin'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Faibledistance_5_0() {
+            return {
+                pane: 'pane_Faibledistance_5',
+                opacity: 1,
+                color: 'rgba(79,87,234,1.0)',
+                dashArray: '1,5',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Faibledistance_5');
+        map.getPane('pane_Faibledistance_5').style.zIndex = 405;
+        map.getPane('pane_Faibledistance_5').style['mix-blend-mode'] = 'normal';
+        var layer_Faibledistance_5 = new L.geoJson(json_Faibledistance_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Faibledistance_5',
+            layerName: 'layer_Faibledistance_5',
+            pane: 'pane_Faibledistance_5',
+            onEachFeature: pop_Faibledistance_5,
+            style: style_Faibledistance_5_0,
+        });
+        bounds_group.addLayer(layer_Faibledistance_5);
+        map.addLayer(layer_Faibledistance_5);
+        function pop_CentreSSR_6(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ogc_fid'] !== null ? Autolinker.link(feature.properties['ogc_fid'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['adresse_co'] !== null ? Autolinker.link(feature.properties['adresse_co'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['num_dept'] !== null ? Autolinker.link(feature.properties['num_dept'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nom</th>\
+                        <td>' + (feature.properties['tableauo_2'] !== null ? Autolinker.link(feature.properties['tableauo_2'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Contact admin</th>\
+                        <td>' + (feature.properties['tableauo_9'] !== null ? Autolinker.link(feature.properties['tableauo_9'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tel admin</th>\
+                        <td>' + (feature.properties['tableauo10'] !== null ? Autolinker.link(feature.properties['tableauo10'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Contact médecin</th>\
+                        <td>' + (feature.properties['tableauo11'] !== null ? Autolinker.link(feature.properties['tableauo11'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tel médecin</th>\
+                        <td>' + (feature.properties['tableauo12'] !== null ? Autolinker.link(feature.properties['tableauo12'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_CentreSSR_6_0() {
+            return {
+                pane: 'pane_CentreSSR_6',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(6,6,6,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_CentreSSR_6');
+        map.getPane('pane_CentreSSR_6').style.zIndex = 406;
+        map.getPane('pane_CentreSSR_6').style['mix-blend-mode'] = 'normal';
+        var layer_CentreSSR_6 = new L.geoJson(json_CentreSSR_6, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_CentreSSR_6',
+            layerName: 'layer_CentreSSR_6',
+            pane: 'pane_CentreSSR_6',
+            onEachFeature: pop_CentreSSR_6,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_CentreSSR_6_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_CentreSSR_6);
+        map.addLayer(layer_CentreSSR_6);
+        function pop_CentreMCOaveclitsdesoinscritiques_7(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ogc_fid'] !== null ? Autolinker.link(feature.properties['ogc_fid'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['adresse_co'] !== null ? Autolinker.link(feature.properties['adresse_co'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['num_dept'] !== null ? Autolinker.link(feature.properties['num_dept'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Nom</th>\
+                        <td>' + (feature.properties['tableauo_2'] !== null ? Autolinker.link(feature.properties['tableauo_2'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Contact admin</th>\
+                        <td>' + (feature.properties['tableauo_9'] !== null ? Autolinker.link(feature.properties['tableauo_9'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tel admin</th>\
+                        <td>' + (feature.properties['tableauo10'] !== null ? Autolinker.link(feature.properties['tableauo10'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Contact médecin</th>\
+                        <td>' + (feature.properties['tableauo11'] !== null ? Autolinker.link(feature.properties['tableauo11'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Tel médecin</th>\
+                        <td>' + (feature.properties['tableauo12'] !== null ? Autolinker.link(feature.properties['tableauo12'].toLocaleString(), {truncate: {length: 30, location: 'smart'}}) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_CentreMCOaveclitsdesoinscritiques_7_0() {
+            return {
+                pane: 'pane_CentreMCOaveclitsdesoinscritiques_7',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(146,146,146,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_CentreMCOaveclitsdesoinscritiques_7');
+        map.getPane('pane_CentreMCOaveclitsdesoinscritiques_7').style.zIndex = 407;
+        map.getPane('pane_CentreMCOaveclitsdesoinscritiques_7').style['mix-blend-mode'] = 'normal';
+        var layer_CentreMCOaveclitsdesoinscritiques_7 = new L.geoJson(json_CentreMCOaveclitsdesoinscritiques_7, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_CentreMCOaveclitsdesoinscritiques_7',
+            layerName: 'layer_CentreMCOaveclitsdesoinscritiques_7',
+            pane: 'pane_CentreMCOaveclitsdesoinscritiques_7',
+            onEachFeature: pop_CentreMCOaveclitsdesoinscritiques_7,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_CentreMCOaveclitsdesoinscritiques_7_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_CentreMCOaveclitsdesoinscritiques_7);
+        map.addLayer(layer_CentreMCOaveclitsdesoinscritiques_7);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Temps de trajet entre centre SSR et MCO</h2>';
+            };
+            title.addTo(map);
+            var abstract = new L.Control({'position':'bottomleft'});
+            abstract.onAdd = function (map) {
+                this._div = L.DomUtil.create('div',
+                'leaflet-control leaflet-bar abstract');
+                this._div.id = 'abstract'
+                    this._div.setAttribute("onmouseenter", "abstract.show()");
+                    this._div.setAttribute("onmouseleave", "abstract.hide()");
+                    this.hide();
+                    return this._div;
+                };
+                abstract.hide = function () {
+                    this._div.classList.remove("abstractUncollapsed");
+                    this._div.classList.add("abstract");
+                    this._div.innerHTML = 'i'
+                }
+                abstract.show = function () {
+                    this._div.classList.remove("abstract");
+                    this._div.classList.add("abstractUncollapsed");
+                    this._div.innerHTML = 'Méthode: Création de zones tampons autour des centres SSR pour séléctionner les centres MCO les plus proches en terme de kilomètres. Puis séléction du centre MCO le plus proche de chaque SSR en minutes (à partir du calcul GoogleMaps). Enfin, classement des trajets en fonction de la distance en kilomètres et de la distance en minutes. <br />Statistiques : En moyenne, il faut 8,8 kilomètres et 15,7 minutes pour aller d\'un centre SSR à un centre MCO.<br />Carte réalisée par Tanya EARLY et Alice EL KHEBIR.<br />';
+            };
+            abstract.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/CentreMCOaveclitsdesoinscritiques_7.png" /> Centre MCO avec lits de soins critiques': layer_CentreMCOaveclitsdesoinscritiques_7,'<img src="legend/CentreSSR_6.png" /> Centre SSR': layer_CentreSSR_6,'<img src="legend/Faibledistance_5.png" /> Faible distance': layer_Faibledistance_5,'<img src="legend/Faibledistancetempslong_4.png" /> Faible distance & temps long': layer_Faibledistancetempslong_4,'<img src="legend/Longuedistancetempscourt_3.png" /> Longue distance & temps court': layer_Longuedistancetempscourt_3,'<img src="legend/Longuedistance_2.png" /> Longue distance': layer_Longuedistance_2,'<img src="legend/DEPARTEMENT_1.png" /> DEPARTEMENT': layer_DEPARTEMENT_1,"OpenStreetMap": layer_OpenStreetMap_0,}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_CentreSSR_6,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'tableauo_2'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        </script>
+    </body>
+</html>
